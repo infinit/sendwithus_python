@@ -405,22 +405,23 @@ class api:
             payload['version_name'] = email_version_name
 
         if inline:
-            if isinstance(inline, file):
+            if inline.mode == 'rb':
                 data = base64.b64encode(inline.read())
                 if isinstance(data, bytes) and not isinstance(data, string_types):
                     data = data.decode('latin1')
                 image = ({'id': inline.name, 'data': data})
 
                 payload['inline'] = image
-
             else:
-                logger.error(
-                    'kwarg files must be type(file), got %s' % type(inline))
+                logger.error('file must be opened with mode \'rb\', got: %s' % inline.mode)
 
         if files:
             file_list = []
             if isinstance(files, list):
                 for f in files:
+                    if f.mode != 'rb':
+                        logger.error('file must be opened with mode \'rb\', got: %s' % f.mode)
+                        continue
                     data = base64.b64encode(f.read())
                     if isinstance(data, bytes) and not isinstance(data, string_types):
                         data = data.decode('latin1')
