@@ -406,7 +406,10 @@ class api:
 
         if inline:
             if isinstance(inline, file):
-                image = ({'id': inline.name, 'data': base64.b64encode(inline.read())})
+                data = base64.b64encode(inline.read())
+                if isinstance(data, bytes) and not isinstance(data, string_types):
+                    data = data.decode('latin1')
+                image = ({'id': inline.name, 'data': data})
 
                 payload['inline'] = image
 
@@ -418,7 +421,10 @@ class api:
             file_list = []
             if isinstance(files, list):
                 for f in files:
-                    file_list.append({'id': f.name, 'data': base64.b64encode(f.read())})
+                    data = base64.b64encode(f.read())
+                    if isinstance(data, bytes) and not isinstance(data, string_types):
+                        data = data.decode('latin1')
+                    file_list.append({'id': f.name, 'data': data})
 
                 payload['files'] = file_list
 
